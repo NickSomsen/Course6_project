@@ -32,7 +32,7 @@ Dat heb ik alsvolgt gedaan:
 ```{r row identifier data frame}
 row.names(data_frame) = data_frame[, "ID"]
 ```
-Met `row.names()` geef je de rijen in een data frame namen. Die namen worden bepaald aan de hand van de gennamen in de ID kolom van de data frame zelf (bij het subsetten van data uit een data frame geef je eerst de rijen op, dan de kolommen. Met `data_frame[, "IdD"]` geef je dus alle rijen, en dan kolom ID aan). Het resultaat (ook weer alleen de eerste 10):
+Met `row.names()` geef je de rijen in een data frame namen. Die namen worden bepaald aan de hand van de gennamen in de ID kolom van de data frame zelf (bij het subsetten van data uit een data frame geef je eerst de rijen op, dan de kolommen. Met `data_frame[, "ID"]` geef je dus alle rijen, en dan kolom ID aan). Het resultaat (ook weer alleen de eerste 10):
 ```{r show data frame new identifier, echo=FALSE}
 options(width = 110) 
 head(data_frame, 10)
