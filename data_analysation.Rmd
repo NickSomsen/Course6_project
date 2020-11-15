@@ -1,0 +1,64 @@
+---
+title: "Data Analysation"
+author: "Gaben van den Hoeven, Tom Ummenthun and Nick Somsen"
+date: "datum-komt-hier"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+<br> <!-- voor een extra witregel -->
+
+## Loading the dataset
+Als eerst moet het bestand in R worden ingelezen. Ik heb de bestand locatie in R ingevoerd:
+``` {r file path}
+file_name = "~/Tutor/Jaar 2/Course 6/Week 1/RNA-Seq-counts.txt"
+```
+Bij mij staat "~" voor mijn documents folder, dus vanaf daar heb ik nog het pad naar het bestand moeten opgeven.
+
+Vervolgens heb ik het bestand ingelezen met `read.table()`, om er een dataframe van te maken:
+``` {r create data frame}
+data_frame = read.table(file = file_name, sep = "\t", header = TRUE)
+```
+De data frame ziet er dan zo uit (alleen de eerste 10):
+```{r show data frame, echo=FALSE}
+options(width = 100) # ik pas de breedte aan zodat alle kolommen op dezelfe line kunnen
+head(data_frame, 10)
+```
+
+Elke rij in de data frame heeft nu een getal als identifier, maar het is handiger om daar de gennamen van te maken.
+Dat heb ik alsvolgt gedaan:
+```{r row identifier data frame}
+row.names(data_frame) = data_frame[, "ID"]
+```
+Met `row.names()` geef je de rijen in een data frame namen. Die namen worden bepaald aan de hand van de gennamen in de ID kolom van de data frame zelf (bij het subsetten van data uit een data frame geef je eerst de rijen op, dan de kolommen. Met `data_frame[, "IdD"]` geef je dus alle rijen, en dan kolom ID aan). Het resultaat (ook weer alleen de eerste 10):
+```{r show data frame new identifier, echo=FALSE}
+options(width = 110) 
+head(data_frame, 10)
+```
+
+Nu moet er van de data frame een DGEList worden gemaakt. `DGEList()` is een functie van `edgeR`, die je dus eerst nog moet importen:
+```{r load edgeR, message=FALSE}
+library(edgeR)
+```
+Voor een DGEList moet je de counts als data opgeven, en ook de groups; een factor die de condities van elke sample aangeven (dus glucose of ribose voedingsbodem). Het aanmaken van die groups gebeurt zo:
+```{r factor for DGEList}
+exp = c("WCFS1.glc.1","WCFS1.glc.2","WCFS1.rib.1","WCFS1.rib.2", "NC8.glc.1", "NC8.glc.2", "NC8.rib.1", "NC8.rib.2")
+group = factor(exp)
+```
+`exp` is hierin niet zomaar een variabele naam. Het is iets van een fucntie die met logaritmen en exponenten te maken heeft, maar het is mij niet helemaal duidelijk waarom je dit doet. Verder maak je dan van die `exp` variabele een factor in de tweede line.
+
+Nu kun je het DGEList object aanmaken:
+```{r create DGEList}
+y <- DGEList(counts=data_frame[,2:9], group=group)
+```
+Voor de `counts` parameter moet je de count in de dataframe selecteren. `group` parameter is de eerder aangemaakte group factor. Wanneer je de DGEList print dan ziet het er zo uit:
+```{r show DGEList, echo=FALSE}
+y
+```
+Wanneer je het in R aanklikt krijg je nog wat meer te zien. Wat je allemaal ziet en hoe je het kunt interpreteren is mij niet helemaal duidelijk. Maar nu kunnen we wel in principe beginnen met het normaliseren van de data.
+
+## Normalize the data
+
+<br>
