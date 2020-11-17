@@ -11,47 +11,47 @@ knitr::opts_chunk$set(echo = TRUE)
 <br> <!-- voor een extra witregel -->
 
 ## Loading the dataset
-Als eerst moet het bestand in R worden ingelezen. Ik heb de bestand locatie in R ingevoerd:
-``` {r file path}
-file_name = "~/Tutor/Jaar 2/Course 6/Week 1/RNA-Seq-counts.txt"
-```
-
-Vervolgens heb ik het bestand ingelezen met `read.table()`, om er een dataframe van te maken:
+Als eerst moet het bestand in R worden ingelezen. Dit is gedaan door de bestandslocatie in een variabele op te slaan, en vervolgens is van de data in het bestand een data frame gemaakt met `read.table()`
 ``` {r create data frame}
+file_name = "~/Tutor/Jaar 2/Course 6/Week 1/RNA-Seq-counts.txt"
 data_frame = read.table(file = file_name, sep = "\t", header = TRUE)
 ```
-De data frame ziet er dan zo uit (alleen de eerste 10):
+
+De data frame ziet er als volgt uit (alleen de eerste 10 regels):
 ```{r show data frame, echo=FALSE}
 options(width = 100) # ik pas de breedte aan zodat alle kolommen op dezelfe line kunnen
 head(data_frame, 10)
 ```
 
 Elke rij in de data frame heeft nu een getal als identifier, maar het is handiger om daar de gennamen van te maken.
-Dat heb ik met `row.names()` gedaan:
+Dat is gedaan met `row.names()`:
 ```{r row identifier data frame}
 row.names(data_frame) = data_frame[, "ID"]
 ```
- Het resultaat (ook weer alleen de eerste 10):
+
+Het resultaat (ook weer alleen de eerste 10 regels):
 ```{r show data frame new identifier, echo=FALSE}
 options(width = 110) 
 head(data_frame, 10)
 ```
 
-Nu moet er van de data frame een DGEList worden gemaakt. `DGEList()` is een functie van `edgeR`, die je dus eerst nog moet importen:
+Om makkelijk met de count data te kunnen werken, wordt er van de data frame een DGEList object gemaakt. `DGEList()` is een functie van `edgeR`, die dus eerst nog geïmporteerd moet worden:
 ```{r load edgeR, message=FALSE}
 library(edgeR)
 ```
-Voor een DGEList moet je de counts als data opgeven, en ook de groups; een factor die de condities van elke sample aangeven (dus glucose of ribose voedingsbodem). Het aanmaken van die groups:
+
+Voor een DGEList moet de counts data (vanuit de dataset) en de groepen worden opgegeven; een factor die de condities van elke sample aangeven (dus een glucose of ribose voedingsbodem). Het aanmaken van die groups gaat als volgt:
 ```{r factor for DGEList}
 exp = c("WCFS1.glc.1","WCFS1.glc.2","WCFS1.rib.1","WCFS1.rib.2", "NC8.glc.1", "NC8.glc.2", "NC8.rib.1", "NC8.rib.2")
 group = factor(exp)
 ```
 
-Nu kun je het DGEList object aanmaken:
+Nu kan het DGEList object aangemaakt worden. Voor de `counts` parameter moeten de counts vanuit de dataframe geselecteerd worden. De `group` parameter is de eerder aangemaakte group factor.
 ```{r create DGEList}
 y <- DGEList(counts=data_frame[,2:9], group=group)
 ```
-Voor de `counts` parameter moet je de data counts in de dataframe selecteren. `group` parameter is de eerder aangemaakte group factor. Wanneer je de DGEList print dan ziet het er zo uit:
+
+Het printen van de DGEList leverd het volgende resultaat:
 ```{r show DGEList, echo=FALSE}
 y
 ```
