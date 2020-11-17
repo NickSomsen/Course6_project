@@ -40,7 +40,7 @@ Om makkelijk met de count data te kunnen werken, wordt er van de data frame een 
 library(edgeR)
 ```
 
-Voor een DGEList moet de counts data (vanuit de dataset) en de groepen worden opgegeven; een factor die de condities van elke sample aangeven (dus een glucose of ribose voedingsbodem). Het aanmaken van die groups gaat als volgt:
+Voor een DGEList moet de counts data (vanuit de dataset) en de groups worden opgegeven. De groups is een factor die de mogelijke condities van de samples aangeven (dus een glucose of ribose voedingsbodem). Het aanmaken van die groups gaat als volgt:
 ```{r factor for DGEList}
 exp = c("WCFS1.glc.1","WCFS1.glc.2","WCFS1.rib.1","WCFS1.rib.2", "NC8.glc.1", "NC8.glc.2", "NC8.rib.1", "NC8.rib.2")
 group = factor(exp)
