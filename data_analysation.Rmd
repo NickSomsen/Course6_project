@@ -65,7 +65,7 @@ De trimmed mean, en andere metingen en waarden, geven een basis voor de vergelij
 
 In R kan de trimmed mean normalisatie methode worden uitgevoer met `calcNormFactors()`, een functie van de `edgeR` library:
 ```{r normalize data}
-y <- calcNormFactors(y, method="TMM" )
+y <- calcNormFactors(y, method="TMM")
 ```
 
 
