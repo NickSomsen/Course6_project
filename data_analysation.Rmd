@@ -57,5 +57,16 @@ y
 ```
 
 ## Normalize the data
+Er zijn verschillende manieren om data te normaliseren. Eén van deze manieren is de Trimmed Mean Method (TMM). De TMM methode is een normalisatie methode waarbij het gemiddelde pas wordt berekend, nadat een bepaalde hoeveelheid van de laagste en hoogste waarden van de dataset zijn verwijderd. De hoeveelheid waarden die van beide kanten worden weggegooid kunnen absolute aantallen zijn of percentages, vaak dezelfde hoeveelheid voor beide kanten. 
+
+Nadat deze outliers van de dataset zijn verwijderd, wordt de trimmed mean bepaald aan de hand van een formule. De trimmed mean wordt gebruikt omdat het uitschieters niet mee neemt in de berekeningen, die anders de data op een negatieve manier zouden beïnvloeden. Bovendien wordt door het uitsluiten van de uitschieters een beter beeld van de werkelijkheid verkregen. 
+
+De trimmed mean, en andere metingen en waarden, geven een basis voor de vergelijking van de data.
+
+In R kan de trimmed mean normalisatie methode worden uitgevoer met `calcNormFactors()`, een functie van de `edgeR` library:
+```{r normalize data}
+y <- calcNormFactors(y, method="TMM" )
+```
+
 
 <br>
