@@ -12,6 +12,7 @@ library(here)
 <br> <!-- voor een extra witregel -->
 
 ## Loading the dataset
+
 Als eerst moet het bestand in R worden ingelezen. Dit is gedaan door de bestandslocatie in een variabele op te slaan, en vervolgens is van de data in het bestand een data frame gemaakt met `read.table()`
 ``` {r create data frame}
 file_name = paste(here(), "RNA-Seq-counts.txt", sep = "/")
