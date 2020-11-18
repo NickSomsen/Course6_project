@@ -7,13 +7,14 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(here)
 ```
 <br> <!-- voor een extra witregel -->
 
 ## Loading the dataset
 Als eerst moet het bestand in R worden ingelezen. Dit is gedaan door de bestandslocatie in een variabele op te slaan, en vervolgens is van de data in het bestand een data frame gemaakt met `read.table()`
 ``` {r create data frame}
-file_name = "~/Tutor/Jaar 2/Course 6/Week 1/RNA-Seq-counts.txt"
+file_name = paste(here(), "RNA-Seq-counts.txt", sep = "/")
 data_frame = read.table(file = file_name, sep = "\t", header = TRUE)
 ```
 
@@ -66,6 +67,7 @@ De trimmed mean, en andere metingen en waarden, geven een basis voor de vergelij
 In R kan de trimmed mean normalisatie methode worden uitgevoer met `calcNormFactors()`, een functie van de `edgeR` library:
 ```{r normalize data}
 y <- calcNormFactors(y, method="TMM")
+y
 ```
 
 
