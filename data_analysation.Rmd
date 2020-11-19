@@ -7,32 +7,21 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(here)
 ```
 <br> <!-- voor een extra witregel -->
 
 ## Loading the dataset
-Als eerst moet het bestand in R worden ingelezen. Dit is gedaan door de bestandslocatie in een variabele op te slaan, en vervolgens is van de data in het bestand een data frame gemaakt met `read.table()`
-``` {r create data frame}
+
+Als eerst moet het bestand in R worden ingelezen. Dit is gedaan met behulp van de library here, die de current working directory met `here()` ophaald, en vervolgens wordt dit samengeplakt met een opgegeven bestandsnaam. Van de data in het bestand is vervolgens een data frame gemaakt met `read.table()`. De identifiers voor de rijen (`row.names`) zijn de gennamen, die in kolom 1 van het bestand staan.
+``` {r create data frame, message = FALSE, warning = FALSE}
+library(here)
 file_name = paste(here(), "RNA-Seq-counts.txt", sep = "/")
-data_frame = read.table(file = file_name, sep = "\t", header = TRUE)
+data_frame = read.table(file = file_name, sep = "\t", header = TRUE, row.names = 1)
 ```
 
 De data frame ziet er als volgt uit (alleen de eerste 10 regels):
 ```{r show data frame, echo=FALSE}
 options(width = 100) # ik pas de breedte aan zodat alle kolommen op dezelfe line kunnen
-head(data_frame, 10)
-```
-
-Elke rij in de data frame heeft nu een getal als identifier, maar het is handiger om daar de gennamen van te maken.
-Dat is gedaan met `row.names()`:
-```{r row identifier data frame}
-row.names(data_frame) = data_frame[, "ID"]
-```
-
-Het resultaat (ook weer alleen de eerste 10 regels):
-```{r show data frame new identifier, echo=FALSE}
-options(width = 110) 
 head(data_frame, 10)
 ```
 
@@ -49,7 +38,7 @@ group = factor(exp)
 
 Nu kan het DGEList object aangemaakt worden. Voor de `counts` parameter moeten de counts vanuit de dataframe geselecteerd worden. De `group` parameter is de eerder aangemaakte group factor.
 ```{r create DGEList}
-y <- DGEList(counts=data_frame[,2:9], group=group)
+y <- DGEList(counts=data_frame[,1:8], group=group)
 ```
 
 Het printen van de DGEList leverd het volgende resultaat:
