@@ -47,6 +47,8 @@ y
 ```
 
 ## Normalize the data
+Zodat de data met elkaar vergeleken kan worden, moet de data genormaliseerd worden. Hierdoor wordt bijvoorbeeld het effect van biologischefactoren die buiten je macht om de data beïnvloeden, geminimaliseerd.
+
 Er zijn verschillende manieren om data te normaliseren. Eén van deze manieren is de Trimmed Mean Method (TMM). De TMM methode is een normalisatie methode waarbij het gemiddelde pas wordt berekend, nadat een bepaalde hoeveelheid van de laagste en hoogste waarden van de dataset zijn verwijderd. De hoeveelheid waarden die van beide kanten worden weggegooid kunnen absolute aantallen zijn of percentages, vaak dezelfde hoeveelheid voor beide kanten. 
 
 Nadat deze outliers van de dataset zijn verwijderd, wordt de trimmed mean bepaald aan de hand van een formule. De trimmed mean wordt gebruikt omdat het uitschieters niet mee neemt in de berekeningen, die anders de data op een negatieve manier zouden beïnvloeden. Bovendien wordt door het uitsluiten van de uitschieters een beter beeld van de werkelijkheid verkregen. 
@@ -58,6 +60,23 @@ In R kan de trimmed mean normalisatie methode worden uitgevoer met `calcNormFact
 y <- calcNormFactors(y, method="TMM")
 y
 ```
+Wanneer de TMM methode als normalisatie methode wordt uitgevoerd, hoeft er niet meer gefilterd te worden op low reads.
+
+Vervolgens wordt er een design matrix gemaakt, die data aan elkaar linkt. Een design matrix is "a matrix of values of explanatory variables of a set of objects. Each row represents an individual object, with the successive columns corresponding to the variables and their specific values for that object" [via https://en.wikipedia.org/wiki/Design_matrix]. In R kan er een design matrix worden gemaakt met de `model.matrix()` functie. Het object waarover de design matrix moet worden gemaakt wordt opgegeven als de eerste parameter. De data vanuit de data frame die gelinkt moet worden aan het object wordt met de `data` parameter opgegeven. De kolommen van de design matrix krijgen een naam met de `colnames()` functie.
+```{r design matrix}
+design <- model.matrix(~0+group, data=y$samples)
+colnames(design) <- levels(y$samples$group)
+```
+De desing matrix ziet er als volgt uit:
+```{r view design matrix, echo=FALSE}
+design
+```
+
+## Calculate the dispersion
+Om de spreiding tussen de data te bepalen, moet de dispersie worden berekent.
+
 
 
 <br>
+
+
