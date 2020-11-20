@@ -76,6 +76,34 @@ design
 Om de spreiding tussen de data te bepalen, moet de dispersie worden berekent.
 
 
+```{r dispersion plot}
+y = estimateGLMCommonDisp(y,design)
+y = estimateGLMTrendedDisp(y,design, method="power")
+y = estimateGLMTagwiseDisp(y,design)
+
+plotMDS(y)
+
+plotBCV(y)
+```
+
+## Calculate Fold changes
+
+```{r calculating fold changes}
+fit = glmFit(y, design)
+mc = makeContrasts(exp.r=WCFS1.glc-WCFS1.rib, levels=design)
+mc
+fit = glmLRT(fit, contrast=mc)
+fit
+topTags(fit)
+```
+
+
+## Results
+
+```{r results}
+testvalue = fit$table[,4]
+testvalue
+```
 
 <br>
 
