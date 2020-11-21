@@ -73,33 +73,53 @@ design
 ```
 
 ## Calculate the dispersion
-Om de spreiding tussen de data te bepalen, moet de dispersie worden berekent.
+Om de spreiding tussen de data te bepalen, moet de dispersie worden berekent. Hiervoor zijn er verschillende functies beschikbaar in de `edgeR` library. Om zoveel mogelijk informatie te verkrijgen, worden er meerdere grafieken in dezelfde figuur geplot. Dit zijn de volgende grafieken:
 
+1. De tagwise dispersie grafiek, waarbij elk datapunt één gen voor stelt.
+2. De common dispersie grafiek, die een gemiddelde weer geeft van alle data, en daardoor constant is
+3. De trend dispersie grafiek, die een trendlijn trekt door de tagwise datapunten.
 
-```{r dispersion plot}
+Deze grafieken zijn met de volgende functies aangemaakt, en worden opgeslagen in het DGEList object:
+```{r calculate dispersion}
 y = estimateGLMCommonDisp(y,design)
 y = estimateGLMTrendedDisp(y,design, method="power")
 y = estimateGLMTagwiseDisp(y,design)
+```
 
-plotMDS(y)
-
+De dispersie kan dan als volgt worden geplot:
+```{r dispersion plot}
 plotBCV(y)
 ```
 
-## Calculate Fold changes
+In de figuur is te zien dat de variatie afneemt, naarmate de counts toenemen.
 
-```{r calculating fold changes}
-fit = glmFit(y, design)
-mc = makeContrasts(exp.r=WCFS1.glc-WCFS1.rib, levels=design)
-mc
-fit = glmLRT(fit, contrast=mc)
-fit
-topTags(fit)
+Ook kan nu de correlatie worden bepaald tussen de duplo's onderling, en over de verschillende condities en de _L. plantarum_ stammen. Dit kan in een grafiek worden geplot:
+```{r correlation plot}
+plotMDS(y)
 ```
 
+In deze grafiek kan op de eerste dimensie (x-as) afgelezen worden hoever de glucose en ribose groepen uit elkaar liggen. Op de tweede dimensie (y-as) kan afgelezen worden hoever de duplo metingen uit elkaar liggen. Dit verschil tussen de duplo metingen moet klein zijn; was dit verschil groot geweest, dan betekent dat dat er veel verschillen zaten tussen de duplo metingen, wat ongewild is, en bovendien suggereerd dat de condities tijdens de twee metingen niet gelijk waren. Het verschil tussen de glucose en ribose condities mag logischerwijs wel groter zijn, net als de verschillen tussen de WCFS1 en NC8 stammen.
+
+In de figuur is te zien dat bij beide _L. plantarum_ stammen de glucose en ribose metingen wat verder uit elkaar liggen (een afstand van ongeveer 2). In de tweede dimensie is te zien dat de twee stammen onderling ook ongeveer 2 uit elkaar liggen. Verder is er te zien dat er weinig verschil is tussen de duplo metingen, doordat de datapunten elkaar overlappen.
+
+## Calculate fold changes
+Om verschil tussen genexpressie te bepalen, worden de fold changes van de genexpressie levels berekend. Ook worden hiervoor p-values berekent, om betrouwbaarheid te controleren. Hiervoor moet er eerst een model worden gefit voor de read counts van elk gen. Dit wordt gedaan met `glmFit`, een functie van `edgeR`. Daarna kan het contrast tussen de verschillende groepen worden bepaald met de `makeContrasts` functie van de library `limma` (die tegelijk met `edgeR` wrodt ingeladen). Wanneer dat is gedaan, wordt er opniew een model gefit met de `glmLRT` functie, ook van `edgeR`:
+```{r calculate fold changes}
+fit = glmFit(y, design)
+mc = makeContrasts(exp.r=WCFS1.glc-WCFS1.rib, levels=design) # de exp.r parameter moet nog worden aangepast, want wij hebben ook NC8 erbij inzitten. Ik weet alleen niet hoe je die parameter moet aanpassen, want simpelweg NC8.glc-NC8.rib erachter zetten geeft vgm verkeerde resultaten
+fit = glmLRT(fit, contrast=mc)
+```
+
+De genen met het grootste verschil in fold changes (en dus expressie) kunnen dan worden weergegeven met `topTags`:
+```{r display top tags}
+res<-topTags(fit)
+print(res)
+```
+
+## Cluster genes
+We moeten nog genen clusteren ofzo. Tilman zei dat dit met hclust() of kmeans() kan, maar ik heb geen idee hoe
 
 ## Results
-
 ```{r results}
 testvalue = fit$table[,4]
 testvalue
