@@ -112,7 +112,7 @@ mc = makeContrasts(exp.r=WCFS1.glc-WCFS1.rib, levels=design)
 fit = glmLRT(fit, contrast=mc)
 ```
 
-De genen met het grootste verschil in fold changes (en dus expressie) tussen een glucose en ribose voedingsbodem van de WCFS1 stam kunnen dan worden weergegeven met `topTags`:
+De genen met het grootste verschil in fold changes (en dus expressie) tussen een glucose en ribose voedingsbodem van de WCFS1 stam kunnen dan worden weergegeven met `topTags`, dat defalut filtert op p-value:
 ```{r display top tags WCFS1}
 res<-topTags(fit)
 print(res)
