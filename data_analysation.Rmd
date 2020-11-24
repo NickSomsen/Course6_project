@@ -39,6 +39,7 @@ group = factor(exp)
 Nu kan het DGEList object aangemaakt worden. Voor de `counts` parameter moeten de counts vanuit de dataframe geselecteerd worden. De `group` parameter is de eerder aangemaakte group factor.
 ```{r create DGEList}
 y <- DGEList(counts=data_frame[,1:8], group=group)
+testDGE = DGEList(counts=data_frame[,1:8], group=group)
 ```
 
 Het printen van de DGEList leverd het volgende resultaat:
@@ -58,6 +59,7 @@ De trimmed mean, en andere metingen en waarden, geven een basis voor de vergelij
 In R kan de trimmed mean normalisatie methode worden uitgevoer met `calcNormFactors()`, een functie van de `edgeR` library:
 ```{r normalize data}
 y <- calcNormFactors(y, method="TMM")
+testDGE = calcNormFactors(testDGE, method="TMM")
 y
 ```
 Alleen tijdens de berekening van de normalisatiefactoren worden de kleinste en hoogste waarde tijdelijk niet meegenomen, maar deze waarden blijven wel gewoon in het data object zitten. Wanneer er vervolgens verdere berekeningne worden gedaan met de dataset, zitten de kleinste en hoogste waarden hier dus gewoon weer bij. De vermeningvuldiging van counts met normalisatiefactor vindt automatisch plaats wanneer er met het data object gerekend wordt. 
@@ -66,10 +68,21 @@ Vervolgens wordt er een design matrix gemaakt, die data aan elkaar linkt. Een de
 ```{r design matrix}
 design <- model.matrix(~0+group, data=y$samples)
 colnames(design) <- levels(y$samples$group)
+
+testDesign = model.matrix(~0+group, data=y$samples)
+colnames(testDesign) = levels(testDGE$samples$group)
 ```
 De desing matrix ziet er als volgt uit:
 ```{r view design matrix, echo=FALSE}
 design
+```
+
+```{r filter for low read counts}
+keep = filterByExpr(y, design, min.total.count = 4000)
+y = y[keep,]
+testDGE = testDGE[keep,]
+summary(keep)
+y
 ```
 
 ## Calculate the dispersion
@@ -81,14 +94,20 @@ Om de spreiding tussen de data te bepalen, moet de dispersie worden berekent. Hi
 
 Deze grafieken zijn met de volgende functies aangemaakt, en worden opgeslagen in het DGEList object:
 ```{r calculate dispersion}
-y = estimateGLMCommonDisp(y,design)
-y = estimateGLMTrendedDisp(y,design, method="power")
-y = estimateGLMTagwiseDisp(y,design)
+testDGE = estimateGLMCommonDisp(testDGE,testDesign)  
+testDGE = estimateGLMTrendedDisp(testDGE,testDesign, method="power") #op advies van Philip hadden we deze uitgezet.
+testDGE = estimateGLMTagwiseDisp(testDGE,testDesign)
+y = estimateDisp(y, design)
 ```
 
 De dispersie kan dan als volgt worden geplot:
 ```{r dispersion plot}
-plotBCV(y)
+
+temporaryplot = plotBCV(testDGE)
+title("3 seperate commands")
+correctplot = plotBCV(y)
+title("1 single command")
+
 ```
 
 In de figuur is te zien dat de variatie afneemt, naarmate de counts toenemen.
@@ -134,12 +153,12 @@ print(res)
 Desondanks dat er in de correlatie figuur te zien was dat de de WCFS1 en NC8 stammen best wat uitelkaar lagen, lijkt er toch weinig verschil te zitten in de genen die van expressie niveau veranderen, tussen de twee stammen. De genen lp_2154 en lp_2151 zijn van positie omegewisseld tussen de twee stammen, en ook is het laatste gen in het rijtje voor beide stammen anders.
 
 ## Cluster genes
-We moeten nog genen clusteren met hclust() of kmeans()
+We moeten nog genen clusteren met ? of kmeans()
 
 ## Results
 ```{r results}
 testvalue = fit$table[,4] # kolom 4 is de p-value kolom, dus dat moet volgensmij nog worden aangepast
-testvalue
+#testvalue
 ```
 
 <br>
