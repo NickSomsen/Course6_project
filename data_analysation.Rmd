@@ -1,6 +1,6 @@
 ---
 title: "Data Analysation"
-author: "Gaben van den Hoeven, Tom Ummenthun and Nick Somsen"
+author: "Gabe van den Hoeven, Tom Ummenthun and Nick Somsen"
 date: "datum-komt-hier"
 output: html_document
 ---
