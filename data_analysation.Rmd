@@ -72,17 +72,18 @@ colnames(design) <- levels(y$samples$group)
 testDesign = model.matrix(~0+group, data=y$samples)
 colnames(testDesign) = levels(testDGE$samples$group)
 ```
-De desing matrix ziet er als volgt uit:
+De design matrix ziet er als volgt uit:
 ```{r view design matrix, echo=FALSE}
 design
 ```
 
+Na de normalisatie kan er nog gefilterd worden op low read counts. Soms hebben genen zulke lage read counts, dat ze niet interessant zijn voor dit onderzoek, en deze genen worden dan eruit gefilterd. `edgeR` heeft hier een functie voor: `filterByExpr`. Als parameters worden het DGEList object, de design matrix en een count threshold meegegeven. De `min.total.count` parameter geeft de threshold aan van het aantal read counts die één hele rij in de data frame moet hebben (dus over 8 kolommen). 4000 / 8 = 500 read counts moet elke kolom gemiddeld hebben, om significant te zijn. Met de niet gebruikte `min.count` parameter kan de threshold per kolom worden bepaald. Hiervoor is niet gekozen, omdat wanneer de ene stam bijvoorbeeld wel significant is, en de andere stam niet, dan blijven alleen de genen van één stam in de data zitten, waardoor je niet meer tussen de stammen kunt vergelijken.
 ```{r filter for low read counts}
 keep = filterByExpr(y, design, min.total.count = 4000)
 y = y[keep,]
+
 testDGE = testDGE[keep,]
-summary(keep)
-y
+summary(keep) # 721 genen van de 2219 worden eruit gefilterd (~1/3)
 ```
 
 ## Calculate the dispersion
@@ -153,7 +154,9 @@ print(res)
 Desondanks dat er in de correlatie figuur te zien was dat de de WCFS1 en NC8 stammen best wat uitelkaar lagen, lijkt er toch weinig verschil te zitten in de genen die van expressie niveau veranderen, tussen de twee stammen. De genen lp_2154 en lp_2151 zijn van positie omegewisseld tussen de twee stammen, en ook is het laatste gen in het rijtje voor beide stammen anders.
 
 ## Cluster genes
-We moeten nog genen clusteren met ? of kmeans()
+We moeten nog genen clusteren met hclust() of kmeans(). Bij hclust moeten eerst de afstanden worden berekend met dist, en daarna maakt hclust er een boomstructuur van. Hiervoor moest je wel de rijen en kolommen met t() eerst omwisselen, zodat je de sample groepen clustert, en niet elk gen apart.
+
+Bij kmeans wordt de data verdeeld in groepen. Je moet zelf het aantal clusters opgeven. De data wordt dan gegroepeerd op punten die bij elkaar liggen. Er zit een randomisatie factor in, dus elke run kunnen het iets andere resultaten staan.
 
 ## Results
 ```{r results}
