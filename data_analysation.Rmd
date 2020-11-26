@@ -134,8 +134,7 @@ fit = glmLRT(fit, contrast=mc)
 
 De genen met het grootste verschil in fold changes (en dus expressie) tussen een glucose en ribose voedingsbodem van de WCFS1 stam kunnen dan worden weergegeven met `topTags`, dat defalut filtert op p-value:
 ```{r display top tags WCFS1}
-res<-topTags(fit)
-print(res)
+print(topTags(fit))
 ```
 
 En vervolgens voor de NC8 stam:
@@ -147,8 +146,7 @@ fit = glmLRT(fit, contrast=mc)
 
 De genen met het grootste verschil in fold changes (en dus expressie) tussen een glucose en ribose voedingsbodem van de NC8 stam kunnen dan ook worden weergegeven:
 ```{r display top tags NC8}
-res<-topTags(fit)
-print(res)
+print(topTags(fit))
 ```
 
 Desondanks dat er in de correlatie figuur te zien was dat de de WCFS1 en NC8 stammen best wat uitelkaar lagen, lijkt er toch weinig verschil te zitten in de genen die van expressie niveau veranderen, tussen de twee stammen. De genen lp_2154 en lp_2151 zijn van positie omegewisseld tussen de twee stammen, en ook is het laatste gen in het rijtje voor beide stammen anders.
