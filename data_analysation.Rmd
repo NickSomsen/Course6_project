@@ -158,7 +158,12 @@ De `hclust()` functie heeft een afstandsmatrix nodig, om een hiërarchische stru
 distances = dist(t(y$counts))
 plot(hclust(distances))
 ```
+<br>
+```{r kmeans}
+library(factoextra)
+test = kmeans(y$counts, centers = 4, iter.max = 50)
 
+```
 Met kmeans:
 Bij kmeans wordt de data verdeeld in groepen. Je moet zelf het aantal clusters opgeven. De data wordt dan gegroepeerd op punten die bij elkaar liggen. Er zit een randomisatie factor in, dus elke run kunnen het iets andere resultaten staan.
 
