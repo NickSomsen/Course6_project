@@ -152,8 +152,14 @@ print(topTags(fit))
 Desondanks dat er in de correlatie figuur te zien was dat de de WCFS1 en NC8 stammen best wat uitelkaar lagen, lijkt er toch weinig verschil te zitten in de genen die van expressie niveau veranderen, tussen de twee stammen. De genen lp_2154 en lp_2151 zijn van positie omegewisseld tussen de twee stammen, en ook is het laatste gen in het rijtje voor beide stammen anders.
 
 ## Cluster genes
-We moeten nog genen clusteren met hclust() of kmeans(). Bij hclust moeten eerst de afstanden worden berekend met dist, en daarna maakt hclust er een boomstructuur van. Hiervoor moest je wel de rijen en kolommen met t() eerst omwisselen, zodat je de sample groepen clustert, en niet elk gen apart.
+Met hclust:
+De `hclust()` functie heeft een afstandsmatrix nodig, om een hiërarchische structuur te maken. Dit kan worden aangemaakt met de `dist()` functie. Om ervoor te zorgen dat de condities en stammen gegproepeerd worden, en niet alle genen apart, moeten de rijen en kolommen van de counts matrix van het DGEList object worden omgewisseld, met `t()`.
+```{r hclust}
+distances = dist(t(y$counts))
+plot(hclust(distances))
+```
 
+Met kmeans:
 Bij kmeans wordt de data verdeeld in groepen. Je moet zelf het aantal clusters opgeven. De data wordt dan gegroepeerd op punten die bij elkaar liggen. Er zit een randomisatie factor in, dus elke run kunnen het iets andere resultaten staan.
 
 ## Results
