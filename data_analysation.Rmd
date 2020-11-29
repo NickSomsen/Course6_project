@@ -77,7 +77,7 @@ De design matrix ziet er als volgt uit:
 design
 ```
 
-Na de normalisatie kan er nog gefilterd worden op low read counts. Soms hebben genen zulke lage read counts, dat ze niet interessant zijn voor dit onderzoek, en deze genen worden dan eruit gefilterd. `edgeR` heeft hier een functie voor: `filterByExpr`. Als parameters worden het DGEList object, de design matrix en een count threshold meegegeven. De `min.total.count` parameter geeft de threshold aan van het aantal read counts die één hele rij in de data frame moet hebben (dus over 8 kolommen). 4000 / 8 = 500 read counts moet elke kolom gemiddeld hebben, om significant te zijn. Met de niet gebruikte `min.count` parameter kan de threshold per kolom worden bepaald. Hiervoor is niet gekozen, omdat wanneer de ene stam bijvoorbeeld wel significant is, en de andere stam niet, dan blijven alleen de genen van één stam in de data zitten, waardoor je niet meer tussen de stammen kunt vergelijken.
+Na de normalisatie kan er nog gefilterd worden op low read counts. Soms hebben genen zulke lage read counts, dat ze niet interessant zijn voor dit onderzoek, en deze genen worden dan eruit gefilterd. `edgeR` heeft hier een functie voor: `filterByExpr`. Als parameters worden het DGEList object, de design matrix en een count threshold meegegeven. De `min.total.count` parameter geeft de threshold aan van het aantal read counts die één hele rij in de data frame moet hebben (dus over 8 kolommen). 1000 / 8 = 125 read counts moet elke kolom gemiddeld hebben, om significant te zijn. Met de niet gebruikte `min.count` parameter kan de threshold per kolom worden bepaald. Hiervoor is niet gekozen, omdat wanneer de ene stam bijvoorbeeld wel significant is, en de andere stam niet, dan blijven alleen de genen van één stam in de data zitten, waardoor je niet meer tussen de stammen kunt vergelijken.
 ```{r filter for low read counts}
 keep = filterByExpr(y, design, min.total.count = 1000)
 y = y[keep,]
@@ -137,6 +137,12 @@ De genen met het grootste verschil in fold changes (en dus expressie) tussen een
 print(topTags(fit))
 ```
 
+In een plot:
+```{r plot FC WCFS1}
+plot(fit$table$logFC, main = "Fold Changes per gene visualized for the WCFS1 strain", xlab = "Gene #", ylab = "Fold Change value")
+```
+
+
 En vervolgens voor de NC8 stam:
 ```{r calculate fold changes NC8}
 fit = glmFit(y, design)
@@ -149,7 +155,13 @@ De genen met het grootste verschil in fold changes (en dus expressie) tussen een
 print(topTags(fit))
 ```
 
-Desondanks dat er in de correlatie figuur te zien was dat de de WCFS1 en NC8 stammen best wat uitelkaar lagen, lijkt er toch weinig verschil te zitten in de genen die van expressie niveau veranderen, tussen de twee stammen. De genen lp_2154 en lp_2151 zijn van positie omegewisseld tussen de twee stammen, en ook is het laatste gen in het rijtje voor beide stammen anders.
+Ook weer in een plot:
+```{r plot FC NC8}
+plot(fit$table$logFC, main = "Fold Changes per gene visualized for the NC8 strain", xlab = "Gene #", ylab = "Fold Change value")
+```
+
+Desondanks dat er in de correlatie figuur te zien was dat de de WCFS1 en NC8 stammen best wat uitelkaar lagen, lijkt er toch weinig verschil te zitten in de genen die van expressie niveau veranderen, tussen de twee stammen. 
+
 
 ## Cluster genes
 Met hclust:
