@@ -140,6 +140,8 @@ print(topTags(fit))
 In een plot:
 ```{r plot FC WCFS1}
 plot(fit$table$logFC, main = "Fold Changes per gene visualized for the WCFS1 strain", xlab = "Gene #", ylab = "Fold Change value")
+# text(0:nrow(fit$table), fit$table$logFC, labels = row.names(fit$table)) # dit zet de namen van de genen op de dataputnen, maar het is niet heel overzichtelijk
+# fit$table["lp_0262",] # dit was even een controle 
 ```
 
 
@@ -158,6 +160,7 @@ print(topTags(fit))
 Ook weer in een plot:
 ```{r plot FC NC8}
 plot(fit$table$logFC, main = "Fold Changes per gene visualized for the NC8 strain", xlab = "Gene #", ylab = "Fold Change value")
+# text(0:nrow(fit$table), fit$table$logFC, labels = row.names(fit$table)) # dit zet de namen van de genen op de dataputnen, maar het is niet heel overzichtelijk
 ```
 
 Desondanks dat er in de correlatie figuur te zien was dat de de WCFS1 en NC8 stammen best wat uitelkaar lagen, lijkt er toch weinig verschil te zitten in de genen die van expressie niveau veranderen, tussen de twee stammen. 
