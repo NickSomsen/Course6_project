@@ -128,7 +128,7 @@ Om verschil tussen genexpressie te bepalen, worden de fold changes van de genexp
 Als eerst voor de WCFS1 stam:
 ```{r calculate fold changes WCFS1}
 fit = glmFit(y, design)
-mc = makeContrasts(exp.r=WCFS1.glc-WCFS1.rib, levels=design) 
+mc = makeContrasts(exp.r=WCFS1.rib-WCFS1.glc, levels=design) 
 fit = glmLRT(fit, contrast=mc)
 ```
 
@@ -148,7 +148,7 @@ plot(fit$table$logFC, main = "Fold Changes per gene visualized for the WCFS1 str
 En vervolgens voor de NC8 stam:
 ```{r calculate fold changes NC8}
 fit = glmFit(y, design)
-mc = makeContrasts(exp.r=NC8.glc-NC8.rib, levels=design) 
+mc = makeContrasts(exp.r=NC8.rib-NC8.glc, levels=design) 
 fit = glmLRT(fit, contrast=mc)
 ```
 
