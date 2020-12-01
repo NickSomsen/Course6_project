@@ -183,7 +183,13 @@ fviz_cluster(clustering, y$counts, show.clust.cent = TRUE, geom = "point", ellip
 ```
 
 ## Results
-```{r results}
+```{r results, warning=FALSE}
+# fit$table[fit$table$logFC > 4.728096,] # dit gaat met de subset functie, maar hierbij kun je maar op één conditie te gelijk filteren.
+library(dplyr) # is als het goed is per default al geïnstalleerd
+dplyr::filter(fit$table, fit$table$logFC > 4.728096 | fit$table$logFC < -7.152701) # met de filter functie van dplyr kun je wel op meerdere condities te gelijk filteren, met de & of | operators net als in Java. Omdat ik 2 packages geïnstalleerd heb die beide een "filter" functie hebben, moet ik aangegeven van welke package ik de filter functie wil gebruiken
+
+# die filtering moeten we dan denk ik ook per stam doen (hierboven is alleen van NC8)
+
 testvalue = fit$table[,4] # kolom 4 is de p-value kolom, dus dat moet volgensmij nog worden aangepast
 #testvalue
 ```
