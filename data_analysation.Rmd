@@ -130,6 +130,7 @@ Als eerst voor de WCFS1 stam:
 fit = glmFit(y, design)
 mc = makeContrasts(exp.r=WCFS1.rib-WCFS1.glc, levels=design) 
 fit = glmLRT(fit, contrast=mc)
+wcfs1 = topTags(fit, n = nrow(fit))
 ```
 
 De genen met het grootste verschil in fold changes (en dus expressie) tussen een glucose en ribose voedingsbodem van de WCFS1 stam kunnen dan worden weergegeven met `topTags`, dat defalut filtert op p-value:
@@ -150,6 +151,7 @@ En vervolgens voor de NC8 stam:
 fit = glmFit(y, design)
 mc = makeContrasts(exp.r=NC8.rib-NC8.glc, levels=design) 
 fit = glmLRT(fit, contrast=mc)
+nc8 = topTags(fit, n = nrow(fit))
 ```
 
 De genen met het grootste verschil in fold changes (en dus expressie) tussen een glucose en ribose voedingsbodem van de NC8 stam kunnen dan ook worden weergegeven:
@@ -186,12 +188,22 @@ fviz_cluster(clustering, y$counts, show.clust.cent = TRUE, geom = "point", ellip
 ```{r results, warning=FALSE}
 # fit$table[fit$table$logFC > 4.728096,] # dit gaat met de subset functie, maar hierbij kun je maar op één conditie te gelijk filteren.
 library(dplyr) # is als het goed is per default al geïnstalleerd
-dplyr::filter(fit$table, fit$table$logFC > 4.728096 | fit$table$logFC < -3.152701) # met de filter functie van dplyr kun je wel op meerdere condities te gelijk filteren, met de & of | operators net als in Java. Omdat ik 2 packages geïnstalleerd heb die beide een "filter" functie hebben, moet ik aangegeven van welke package ik de filter functie wil gebruiken
+
+dplyr::filter(wcfs1$table, (wcfs1$table$logFC > 1 | wcfs1$table$logFC < -1) & wcfs1$table$FDR < 1e-99)
+wcfs1$table["lp_0372", ]
+dplyr::filter(nc8$table, (nc8$table$logFC > 1 | nc8$table$logFC < -1) & nc8$table$FDR < 1e-99)
+nc8$table["lp_0372", ]
+
+# met de filter functie van dplyr kun je wel op meerdere condities te gelijk filteren, met de & of | operators net als in Java. Omdat ik 2 packages geïnstalleerd heb die beide een "filter" functie hebben, moet ik aangegeven van welke package ik de filter functie wil gebruiken
 
 # die filtering moeten we dan denk ik ook per stam doen (hierboven is alleen van NC8), en ook moet er dan nog op p-value gefilterd worden, wat denk ik ook wel in één keer kan
 
+
+
 testvalue = fit$table[,4] # kolom 4 is de p-value kolom, dus dat moet volgensmij nog worden aangepast
 #testvalue
+
+
 ```
 
 <br>
