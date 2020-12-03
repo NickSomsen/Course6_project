@@ -188,15 +188,21 @@ fviz_cluster(clustering, y$counts, show.clust.cent = TRUE, geom = "point", ellip
 Nu alle berekeningen gedaan zijn, kunnen er genen geselecteerd worden die aan bepaalde thresholds voldoen, om verder te onderzoeken en ze in een metabole pathway te plaatsen. De thresholds zijn een logFC value van hoger dan 1, of lager dan -1, en een FDR die kleiner is dan 1e-99. Omdat de FDR waarden niet weergegeven worden in de fit variabelen van de twee stammen, maar wel met de `topTags()` functie, werden er bij de "Calculate fold changes" stap twee nieuwe objecten aangemaakt, waarin alle genen met behulp van de `topTags()` functie werden opgeslagen, zodat de FDR waarde ook bij dat object in zat. Vervolgens kan er op logFC en FDR gefiltert worden, wat met behulp van de functie `filter` van de library `dpylr` was gedaan:
 ```{r results, warning=FALSE}
 library(dplyr)
-# Eerst voor WCFS1
+# filter WCFS1 op logFC en False Discovery Rate (FDR)
 wcfs1 = dplyr::filter(wcfs1$table, (wcfs1$table$logFC > 1 | wcfs1$table$logFC < -1) & wcfs1$table$FDR < 1e-99)
-row.names.remove = c("lp_3545", "lp_0210")
-wcfs1 = wcfs1[!(row.names(wcfs1) %in% row.names.remove), ]
+
+# filter NC8 op logFC en FDR
+nc8 = dplyr::filter(nc8$table, (nc8$table$logFC > 1 | nc8$table$logFC < -1) & nc8$table$FDR < 1e-99)
+
+# voor beide stammen worden de unieke genen bepaald, zodat ze later uit de dataframes kunnen worden gehaald
+rows_in_wcfs1_that_are_not_in_nc8 = wcfs1[!row.names(wcfs1) %in% row.names(nc8), ]
+rows_in_nc8_that_are_not_in_wcfs1 = nc8[!row.names(nc8) %in% row.names(wcfs1), ]
+
+# de unieke genen worden eruit gehaald voor beide stammen
+wcfs1 = wcfs1[!(row.names(wcfs1) %in% row.names(rows_in_wcfs1_that_are_not_in_nc8)), ]
 wcfs1
 
-nc8 = dplyr::filter(nc8$table, (nc8$table$logFC > 1 | nc8$table$logFC < -1) & nc8$table$FDR < 1e-99)
-row.names.remove = c("lp_2684", "lp_2685")
-nc8 = nc8[!(row.names(nc8) %in% row.names.remove), ]
+nc8 = nc8[!(row.names(nc8) %in% row.names(rows_in_nc8_that_are_not_in_wcfs1)), ]
 nc8
 ```
 De filtering is voor beide stammen apart gedaan. Na de filtering op logFC en FDR bleven er 17 genen in beide stammen over, waarvan er 15 in beide genen voorkwamen, en er 2 tussen de twee stammen verschilden. Omdat er ook vergeleken moet kunnen worden tussen de twee stammen, was er besloten om de genen die niet in beide stammen voorkwamen nog verder eruit te filteren, waardoor er 15 genen voor beide stammen overbleven. De uitgefilterde genen van de WCFS1 stam waren de lp_3545 en lp_0210 genen, en voor de NC8 stam de lp_2684 en de lp_2685 genen. 
