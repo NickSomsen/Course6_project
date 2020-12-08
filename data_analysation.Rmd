@@ -232,5 +232,14 @@ combined_nc8 = combined_nc8[, 0:15] # verwijder laatste kolommen
 combined_nc8
 ```
 
+```{r write results}
+write.csv(combined_wcfs1, paste(here(), "wcfs1_results.txt", sep = "/"), row.names = TRUE)
+
+
+write.csv(combined_nc8, paste(here(), "nc8_results.txt", sep = "/"), row.names = TRUE)
+
+```
+
 <br>
+
 
