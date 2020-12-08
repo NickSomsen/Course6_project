@@ -189,10 +189,10 @@ Nu alle berekeningen gedaan zijn, kunnen er genen geselecteerd worden die aan be
 ```{r results, warning=FALSE}
 library(dplyr)
 # filter WCFS1 op logFC en False Discovery Rate (FDR)
-wcfs1 = dplyr::filter(wcfs1$table, (wcfs1$table$logFC > 1 | wcfs1$table$logFC < -1) & wcfs1$table$FDR < 1e-99)
+wcfs1 = dplyr::filter(wcfs1$table, (wcfs1$table$logFC > 1 | wcfs1$table$logFC < -1) & wcfs1$table$FDR < 0.05)
 
 # filter NC8 op logFC en FDR
-nc8 = dplyr::filter(nc8$table, (nc8$table$logFC > 1 | nc8$table$logFC < -1) & nc8$table$FDR < 1e-99)
+nc8 = dplyr::filter(nc8$table, (nc8$table$logFC > 1 | nc8$table$logFC < -1) & nc8$table$FDR < 0.05)
 
 # voor beide stammen worden de unieke genen bepaald, zodat ze later uit de dataframes kunnen worden gehaald
 rows_in_wcfs1_that_are_not_in_nc8 = wcfs1[!row.names(wcfs1) %in% row.names(nc8), ]
