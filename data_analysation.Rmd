@@ -2,7 +2,9 @@
 title: "Data Analysation"
 author: "Gabe van den Hoeven, Tom Ummenthun and Nick Somsen"
 date: "datum-komt-hier"
-output: html_document
+output:
+  html_document:
+    toc: true #table of contents
 ---
 
 ```{r setup, include=FALSE}
@@ -11,7 +13,6 @@ knitr::opts_chunk$set(echo = TRUE)
 <br> <!-- voor een extra witregel -->
 
 ## Loading the dataset
-
 Als eerst moet het bestand in R worden ingelezen. Dit is gedaan met behulp van de library here, die de current working directory met `here()` ophaald, en vervolgens wordt dit samengeplakt met een opgegeven bestandsnaam. Van de data in het bestand is vervolgens een data frame gemaakt met `read.table()`. De identifiers voor de rijen (`row.names`) zijn de gennamen, die in kolom 1 van het bestand staan.
 ``` {r create data frame, message = FALSE, warning = FALSE}
 library(here)
@@ -185,8 +186,8 @@ fviz_cluster(clustering, y$counts, show.clust.cent = TRUE, geom = "point", ellip
 ```
 
 ## Results
-Nu alle berekeningen gedaan zijn, kunnen er genen geselecteerd worden die aan bepaalde thresholds voldoen, om verder te onderzoeken en ze in een metabole pathway te plaatsen. De thresholds zijn een logFC value van hoger dan 1, of lager dan -1, en een FDR die kleiner is dan 1e-99. Omdat de FDR waarden niet weergegeven worden in de fit variabelen van de twee stammen, maar wel met de `topTags()` functie, werden er bij de "Calculate fold changes" stap twee nieuwe objecten aangemaakt, waarin alle genen met behulp van de `topTags()` functie werden opgeslagen, zodat de FDR waarde ook bij dat object in zat. Vervolgens kan er op logFC en FDR gefiltert worden, wat met behulp van de functie `filter` van de library `dpylr` was gedaan:
-```{r results, warning=FALSE}
+Nu alle berekeningen gedaan zijn, kunnen er genen geselecteerd worden die aan bepaalde thresholds voldoen, om verder te onderzoeken en ze in een metabole pathway te plaatsen. De thresholds zijn een logFC value van hoger dan 1, of lager dan -1, en een FDR die kleiner is dan 0.05. Omdat de FDR waarden niet weergegeven worden in de fit variabelen van de twee stammen, maar wel met de `topTags()` functie, werden er bij de "Calculate fold changes" stap twee nieuwe objecten aangemaakt, waarin alle genen met behulp van de `topTags()` functie werden opgeslagen, zodat de FDR waarde ook bij dat object in zat. Vervolgens kan er op logFC en FDR gefiltert worden, wat met behulp van de functie `filter` van de library `dpylr` was gedaan. Omdat er ook vergeleken moet kunnen worden tussen de twee stammen, was er besloten om de genen die niet in beide stammen voorkwamen na filtering, nog verder eruit te filteren.
+```{r results, warning=FALSE, message=FALSE}
 library(dplyr)
 # filter WCFS1 op logFC en False Discovery Rate (FDR)
 wcfs1 = dplyr::filter(wcfs1$table, (wcfs1$table$logFC > 1 | wcfs1$table$logFC < -1) & wcfs1$table$FDR < 0.05)
@@ -200,14 +201,14 @@ rows_in_nc8_that_are_not_in_wcfs1 = nc8[!row.names(nc8) %in% row.names(wcfs1), ]
 
 # de unieke genen worden eruit gehaald voor beide stammen
 wcfs1 = wcfs1[!(row.names(wcfs1) %in% row.names(rows_in_wcfs1_that_are_not_in_nc8)), ]
-wcfs1
 
 nc8 = nc8[!(row.names(nc8) %in% row.names(rows_in_nc8_that_are_not_in_wcfs1)), ]
-nc8
+nrow(nc8)
 ```
-De filtering is voor beide stammen apart gedaan. Na de filtering op logFC en FDR bleven er 17 genen in beide stammen over, waarvan er 15 in beide genen voorkwamen, en er 2 tussen de twee stammen verschilden. Omdat er ook vergeleken moet kunnen worden tussen de twee stammen, was er besloten om de genen die niet in beide stammen voorkwamen nog verder eruit te filteren, waardoor er 15 genen voor beide stammen overbleven. De uitgefilterde genen van de WCFS1 stam waren de lp_3545 en lp_0210 genen, en voor de NC8 stam de lp_2684 en de lp_2685 genen. 
+De filtering is voor beide stammen apart gedaan. Na de filtering op logFC, FDR en de uitfiltering van unieke genen van beide stammen, bleven er 233 genen (in beide stammen) over.
 
 Om de genen verder te onderzoeken, moeten de genen van annotatie worden voorzien. Deze annotatie van (bijna) elk gen was te vinden in het WCFS1_anno.tsv bestand, en is ingelezen met de `read.delim()` functie. Omdat er maar 15 genen over bleven na de filtering, hoeven ook alleen maar deze genen van annotatie te worden voorzien. Hiervoor was het annotatie dataframe gefilterd aan de hand  van de gennamen van de 15 overgebleven genen, en vervolgens worden de twee dataframes samengevoegt met de functie `merge()`, zodat genen van annotatie worden voorzien. Omdat er tijdens het inlezen van het annotatie bestand door een onbekende reden er teveel kolommen werden aangemaakt, werd de samengevoegde dataframe nog een keer gesubset, zodat deze kolommen uit de dataframe werden gehaald. 
+
 ```{r merge with annotation}
 annotation_file = paste(here(), "WCFS1_anno.tsv", sep = "/")
 anno_frame = read.delim(file = annotation_file, sep = "\t", header = TRUE, row.names = 1)
@@ -220,7 +221,6 @@ filtered_anno = anno_frame[(row.names(anno_frame) %in% row.names.keep), ] # alle
 combined_wcfs1 = merge(wcfs1, filtered_anno, by=0, all = TRUE) # de twee dataframes worden gemerged. by=0 betekent aan de hand van row name, all = TRUE betekent dat wanneer een gen geen annotatie heeft, dat die alsnog in de combined frame wordt meegenomen (maar dan met NA values voor de kolommen)
 
 combined_wcfs1 = combined_wcfs1[, 0:15] # de laatste paar kolommen worden eruit gehaald, want die horen er niet te staan
-combined_wcfs1
 
 # voor NC8
 row.names.keep = row.names(nc8) # de 15 gennamen van de NC8 stam
@@ -229,15 +229,13 @@ filtered_anno = anno_frame[(row.names(anno_frame) %in% row.names.keep), ] # filt
 
 combined_nc8 = merge(nc8, filtered_anno, by=0, all = TRUE) # merge dataframes
 combined_nc8 = combined_nc8[, 0:15] # verwijder laatste kolommen
-combined_nc8
 ```
 
+Zodat de data makkelijker te lezen is, worden de twee data frames weggeschreven naar een bestand, die vervolgesn bijvoorbeeld in excel ingeladen kan worden.
 ```{r write results}
 write.csv(combined_wcfs1, paste(here(), "wcfs1_results.txt", sep = "/"), row.names = TRUE)
 
-
 write.csv(combined_nc8, paste(here(), "nc8_results.txt", sep = "/"), row.names = TRUE)
-
 ```
 
 <br>
