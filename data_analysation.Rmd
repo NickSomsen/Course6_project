@@ -231,7 +231,7 @@ combined_nc8 = merge(nc8, filtered_anno, by=0, all = TRUE) # merge dataframes
 combined_nc8 = combined_nc8[, 0:15] # verwijder laatste kolommen
 ```
 
-Zodat de data makkelijker te lezen is, worden de twee data frames weggeschreven naar een bestand, die vervolgesn bijvoorbeeld in excel ingeladen kan worden.
+Zodat de data makkelijker te lezen is, worden de twee data frames weggeschreven naar een bestand, die vervolgens bijvoorbeeld in excel ingeladen kan worden.
 ```{r write results}
 write.csv(combined_wcfs1, paste(here(), "wcfs1_results.txt", sep = "/"), row.names = TRUE)
 
@@ -239,7 +239,9 @@ write.csv(combined_nc8, paste(here(), "nc8_results.txt", sep = "/"), row.names =
 ```
 
 ## KEGG Mapper
-```{r keggmapper}
+![Volledige pathview Glycolysis](lpl00010.pathview.png)
+<br>
+```{r keggmapper WCFS1, warning=FALSE, message=FALSE}
 library(KEGGREST)
 library(pathview)
 
@@ -250,17 +252,20 @@ genes <- row.names(selected_wcfs1)
 logFC <- selected_wcfs1$logFC
 names(logFC) <- genes
 pathview(gene.data = logFC, species = "lpl", pathway = mypathway,  gene.idtype = "KEGG")
-
-
+```
+<br>
+![Glycolysis marked with WCFS1 genes](lpl00010.png)
+<br>
+```{r keggmapper NC8, warning=FALSE, message=FALSE}
+library(KEGGREST)
+library(pathview)
 selected_nc8 = nc8[c("lp_3658", "lp_0371"), ]
 genes <- row.names(selected_nc8)
 logFC <- selected_nc8$logFC
 names(logFC) <- genes
-# pathview(gene.data = logFC, species = "lpl", pathway = mypathway,  gene.idtype = "KEGG")
+pathview(gene.data = logFC, species = "lpl", pathway = mypathway,  gene.idtype = "KEGG")
 
 ```
-
-
+![Glycolysis marked with NC8 genes](lpl00010.png)
 <br>
-
 
