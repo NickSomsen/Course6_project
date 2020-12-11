@@ -210,45 +210,32 @@ De filtering is voor beide stammen apart gedaan. Na de filtering op logFC, FDR e
 Om de genen verder te onderzoeken, moeten de genen van annotatie worden voorzien. Deze annotatie van (bijna) elk gen was te vinden in het WCFS1_anno.tsv bestand, en is ingelezen met de `read.delim()` functie. Omdat er maar 15 genen over bleven na de filtering, hoeven ook alleen maar deze genen van annotatie te worden voorzien. Hiervoor was het annotatie dataframe gefilterd aan de hand  van de gennamen van de 15 overgebleven genen, en vervolgens worden de twee dataframes samengevoegt met de functie `merge()`, zodat genen van annotatie worden voorzien. Omdat er tijdens het inlezen van het annotatie bestand door een onbekende reden er teveel kolommen werden aangemaakt, werd de samengevoegde dataframe nog een keer gesubset, zodat deze kolommen uit de dataframe werden gehaald. 
 
 ```{r merge with annotation}
-annotation_file = paste(here(), "WCFS1_anno.tsv", sep = "/")
-anno_frame = read.delim(file = annotation_file, sep = "\t", header = TRUE, row.names = 1)
+# create annotation data frame
+anno_frame = read.delim(paste(here(), "WCFS1_anno.tsv", sep = "/"), header=TRUE, row.names = 1)
+anno_frame = anno_frame[, 1:9]
 
-# voor WCFS1 
-row.names.keep = row.names(wcfs1) # de 15 gennamen van de WCFS1 stam
+# Merge data frames with annotation
+combined_wcfs1 = cbind(wcfs1, anno_frame[rownames(wcfs1), ])
 
-filtered_anno = anno_frame[(row.names(anno_frame) %in% row.names.keep), ] # alleen de annotatie van de 15 genen wordt uit het annotatie dataframe gehaald, aan de hand van de gennaam
-
-combined_wcfs1 = merge(wcfs1, filtered_anno, by=0, all = TRUE) # de twee dataframes worden gemerged. by=0 betekent aan de hand van row name, all = TRUE betekent dat wanneer een gen geen annotatie heeft, dat die alsnog in de combined frame wordt meegenomen (maar dan met NA values voor de kolommen)
-
-row.names(combined_wcfs1) = combined_wcfs1[, "Row.names"]
-combined_wcfs1 = combined_wcfs1[, 2:15] # de laatste paar kolommen worden eruit gehaald, want die horen er niet te staan
-
-# voor NC8
-row.names.keep = row.names(nc8) # de 15 gennamen van de NC8 stam
-
-filtered_anno = anno_frame[(row.names(anno_frame) %in% row.names.keep), ] # filter annotatie 
-
-combined_nc8 = merge(nc8, filtered_anno, by=0, all = TRUE) # merge dataframes
-
-row.names(combined_nc8) = combined_nc8[, "Row.names"]
-combined_nc8 = combined_nc8[, 2:15] # verwijder laatste kolommen
+combined_nc8 = cbind(nc8, anno_frame[rownames(nc8), ])
 ```
 
 Zodat de data makkelijker te lezen is, worden de twee data frames weggeschreven naar een bestand, die vervolgens bijvoorbeeld in excel ingeladen kan worden.
 ```{r write results}
-#write.csv(combined_wcfs1, paste(here(), "wcfs1_results.txt", sep = "/"), row.names = TRUE)
+write.csv(combined_wcfs1, paste(here(), "wcfs1_results.txt", sep = "/"), row.names = TRUE)
 
-#write.csv(combined_nc8, paste(here(), "nc8_results.txt", sep = "/"), row.names = TRUE)
+write.csv(combined_nc8, paste(here(), "nc8_results.txt", sep = "/"), row.names = TRUE)
 ```
 
 ## KEGG Mapper
-![Volledige pathview Glycolysis](lpl00010.pathview.png)
-<br>
+De normale glycolyse pathway:
+![Volledige pathview Glycolysis](lpl00010.png)
+
 ```{r keggmapper WCFS1, message=FALSE}
 library(KEGGREST)
 library(pathview)
 
-mypathway <- "00010"
+mypathway <- "lpl00010"
 
 selected_wcfs1 = combined_wcfs1[c("lp_0262", "lp_2100", "lp_2102", "lp_0263", "lp_0576", "lp_2702", "lp_2703", "lp_3658", "lp_3659", "lp_3660"), ]
 
@@ -257,17 +244,20 @@ logFC <- combined_wcfs1$logFC
 names(logFC) <- genes
 pathview(gene.data = logFC, species = "lpl", pathway = mypathway,  gene.idtype = "KEGG")
 ```
+De genen bij WCFS1 (let op doordat: wanneer die van NC8 ook wordt uitgevoerd, dan wordt de afbeelding overschreven, waardoor deze ook de NC8 afbeelding weergeeft):
 
-![Glycolysis marked with WCFS1 genes](lpl00010.png)
+![Glycolysis marked with WCFS1 genes](lpl00010.pathview.png)
 ```{r keggmapper NC8, message=FALSE}
 
 selected_nc8 = nc8[c("lp_3658", "lp_0371"), ]
-genes <- row.names(selected_nc8)
-logFC <- selected_nc8$logFC
+genes <- row.names(combined_nc8)
+logFC <- combined_nc8$logFC
 names(logFC) <- genes
-pathview(gene.data = logFC, species = "lpl", pathway = mypathway,  gene.idtype = "KEGG")
+#pathview(gene.data = logFC, species = "lpl", pathway = mypathway,  gene.idtype = "KEGG")
 
 ```
-![Glycolysis marked with NC8 genes](lpl00010.png)
+De genen bij NC8 (NC8 staat nu uit commented, dus hier wordt ook die van WCFS1 weergegeven):
+
+![Glycolysis marked with NC8 genes](lpl00010.pathview.png)
 <br>
 
