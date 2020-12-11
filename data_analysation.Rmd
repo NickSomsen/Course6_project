@@ -220,7 +220,8 @@ filtered_anno = anno_frame[(row.names(anno_frame) %in% row.names.keep), ] # alle
 
 combined_wcfs1 = merge(wcfs1, filtered_anno, by=0, all = TRUE) # de twee dataframes worden gemerged. by=0 betekent aan de hand van row name, all = TRUE betekent dat wanneer een gen geen annotatie heeft, dat die alsnog in de combined frame wordt meegenomen (maar dan met NA values voor de kolommen)
 
-combined_wcfs1 = combined_wcfs1[, 0:15] # de laatste paar kolommen worden eruit gehaald, want die horen er niet te staan
+row.names(combined_wcfs1) = combined_wcfs1[, "Row.names"]
+combined_wcfs1 = combined_wcfs1[, 2:15] # de laatste paar kolommen worden eruit gehaald, want die horen er niet te staan
 
 # voor NC8
 row.names.keep = row.names(nc8) # de 15 gennamen van de NC8 stam
@@ -228,7 +229,9 @@ row.names.keep = row.names(nc8) # de 15 gennamen van de NC8 stam
 filtered_anno = anno_frame[(row.names(anno_frame) %in% row.names.keep), ] # filter annotatie 
 
 combined_nc8 = merge(nc8, filtered_anno, by=0, all = TRUE) # merge dataframes
-combined_nc8 = combined_nc8[, 0:15] # verwijder laatste kolommen
+
+row.names(combined_nc8) = combined_nc8[, "Row.names"]
+combined_nc8 = combined_nc8[, 2:15] # verwijder laatste kolommen
 ```
 
 Zodat de data makkelijker te lezen is, worden de twee data frames weggeschreven naar een bestand, die vervolgens bijvoorbeeld in excel ingeladen kan worden.
@@ -247,11 +250,17 @@ library(pathview)
 
 mypathway <- "00010"
 
-selected_wcfs1 = wcfs1[c("lp_3658", "lp_0371"), ]
-genes <- row.names(selected_wcfs1)
-logFC <- selected_wcfs1$logFC
+selected_wcfs1 = combined_wcfs1[c("lp_0262", "lp_2100", "lp_2102", "lp_0263", "lp_0576", "lp_2702", "lp_2703", "lp_3658", "lp_3659", "lp_3660"), ]
+
+genes <- row.names(combined_wcfs1)
+logFC <- combined_wcfs1$logFC
 names(logFC) <- genes
 pathview(gene.data = logFC, species = "lpl", pathway = mypathway,  gene.idtype = "KEGG")
+<<<<<<< HEAD
+
+
+selected_nc8 = combined_nc8[c("lp_3658", "lp_0371"), ]
+=======
 ```
 <br>
 ![Glycolysis marked with WCFS1 genes](lpl00010.png)
@@ -260,6 +269,7 @@ pathview(gene.data = logFC, species = "lpl", pathway = mypathway,  gene.idtype =
 library(KEGGREST)
 library(pathview)
 selected_nc8 = nc8[c("lp_3658", "lp_0371"), ]
+>>>>>>> ae20caf82d20f693dcec430f15f9daf56b411f58
 genes <- row.names(selected_nc8)
 logFC <- selected_nc8$logFC
 names(logFC) <- genes
