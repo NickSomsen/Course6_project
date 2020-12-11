@@ -241,11 +241,11 @@ write.csv(combined_nc8, paste(here(), "nc8_results.txt", sep = "/"), row.names =
 ## KEGG Mapper
 ![Volledige pathview Glycolysis](lpl00010.pathview.png)
 <br>
-```{r keggmapper WCFS1, warning=FALSE, message=FALSE}
+```{r keggmapper WCFS1, message=FALSE}
 library(KEGGREST)
 library(pathview)
 
-mypathway <- "lpl00010"
+mypathway <- "00010"
 
 selected_wcfs1 = wcfs1[c("lp_3658", "lp_0371"), ]
 genes <- row.names(selected_wcfs1)
@@ -256,7 +256,7 @@ pathview(gene.data = logFC, species = "lpl", pathway = mypathway,  gene.idtype =
 <br>
 ![Glycolysis marked with WCFS1 genes](lpl00010.png)
 <br>
-```{r keggmapper NC8, warning=FALSE, message=FALSE}
+```{r keggmapper NC8, message=FALSE}
 library(KEGGREST)
 library(pathview)
 selected_nc8 = nc8[c("lp_3658", "lp_0371"), ]
