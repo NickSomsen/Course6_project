@@ -256,11 +256,7 @@ genes <- row.names(combined_wcfs1)
 logFC <- combined_wcfs1$logFC
 names(logFC) <- genes
 pathview(gene.data = logFC, species = "lpl", pathway = mypathway,  gene.idtype = "KEGG")
-<<<<<<< HEAD
-
-
 selected_nc8 = combined_nc8[c("lp_3658", "lp_0371"), ]
-=======
 ```
 <br>
 ![Glycolysis marked with WCFS1 genes](lpl00010.png)
@@ -269,7 +265,6 @@ selected_nc8 = combined_nc8[c("lp_3658", "lp_0371"), ]
 library(KEGGREST)
 library(pathview)
 selected_nc8 = nc8[c("lp_3658", "lp_0371"), ]
->>>>>>> ae20caf82d20f693dcec430f15f9daf56b411f58
 genes <- row.names(selected_nc8)
 logFC <- selected_nc8$logFC
 names(logFC) <- genes
