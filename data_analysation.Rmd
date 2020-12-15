@@ -242,22 +242,22 @@ selected_wcfs1 = combined_wcfs1[c("lp_0262", "lp_2100", "lp_2102", "lp_0263", "l
 genes <- row.names(combined_wcfs1)
 logFC <- combined_wcfs1$logFC
 names(logFC) <- genes
-pathview(gene.data = logFC, species = "lpl", pathway = mypathway,  gene.idtype = "KEGG")
+pathview(gene.data = logFC, species = "lpl", pathway = mypathway,  gene.idtype = "KEGG", out.suffix = "wcfs1")
 ```
-De genen bij WCFS1 (let op doordat: wanneer die van NC8 ook wordt uitgevoerd, dan wordt de afbeelding overschreven, waardoor deze ook de NC8 afbeelding weergeeft):
+De genen bij WCFS1:
 
-![Glycolysis marked with WCFS1 genes](lpl00010.pathview.png)
+![Glycolysis marked with WCFS1 genes](lpl00010.wcfs1.png)
 ```{r keggmapper NC8, message=FALSE}
 
 selected_nc8 = nc8[c("lp_3658", "lp_0371"), ]
 genes <- row.names(combined_nc8)
 logFC <- combined_nc8$logFC
 names(logFC) <- genes
-#pathview(gene.data = logFC, species = "lpl", pathway = mypathway,  gene.idtype = "KEGG")
+pathview(gene.data = logFC, species = "lpl", pathway = mypathway,  gene.idtype = "KEGG", out.suffix = "nc8")
 
 ```
-De genen bij NC8 (NC8 staat nu uit commented, dus hier wordt ook die van WCFS1 weergegeven):
+De genen bij NC8:
 
-![Glycolysis marked with NC8 genes](lpl00010.pathview.png)
+![Glycolysis marked with NC8 genes](lpl00010.nc8.png)
 <br>
 
