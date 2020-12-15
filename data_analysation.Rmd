@@ -200,9 +200,11 @@ rows_in_wcfs1_that_are_not_in_nc8 = wcfs1[!row.names(wcfs1) %in% row.names(nc8),
 rows_in_nc8_that_are_not_in_wcfs1 = nc8[!row.names(nc8) %in% row.names(wcfs1), ]
 
 # de unieke genen worden eruit gehaald voor beide stammen
-wcfs1 = wcfs1[!(row.names(wcfs1) %in% row.names(rows_in_wcfs1_that_are_not_in_nc8)), ]
+#wcfs1 = wcfs1[!(row.names(wcfs1) %in% row.names(rows_in_wcfs1_that_are_not_in_nc8)), ]
 
-nc8 = nc8[!(row.names(nc8) %in% row.names(rows_in_nc8_that_are_not_in_wcfs1)), ]
+#nc8 = nc8[!(row.names(nc8) %in% row.names(rows_in_nc8_that_are_not_in_wcfs1)), ]
+
+nrow(wcfs1)
 nrow(nc8)
 ```
 De filtering is voor beide stammen apart gedaan. Na de filtering op logFC, FDR en de uitfiltering van unieke genen van beide stammen, bleven er 233 genen (in beide stammen) over.
@@ -227,37 +229,46 @@ write.csv(combined_wcfs1, paste(here(), "wcfs1_results.txt", sep = "/"), row.nam
 write.csv(combined_nc8, paste(here(), "nc8_results.txt", sep = "/"), row.names = TRUE)
 ```
 
-## KEGG Mapper
-De normale glycolyse pathway:
-![Volledige pathview Glycolysis](lpl00010.png)
 
+## KEGG Mapper
 ```{r keggmapper WCFS1, message=FALSE}
 library(KEGGREST)
 library(pathview)
-
-mypathway <- "lpl00010"
 
 selected_wcfs1 = combined_wcfs1[c("lp_0262", "lp_2100", "lp_2102", "lp_0263", "lp_0576", "lp_2702", "lp_2703", "lp_3658", "lp_3659", "lp_3660"), ]
 
 genes <- row.names(combined_wcfs1)
 logFC <- combined_wcfs1$logFC
 names(logFC) <- genes
-pathview(gene.data = logFC, species = "lpl", pathway = mypathway,  gene.idtype = "KEGG", out.suffix = "wcfs1")
+pathview(gene.data = logFC, species = "lpl", pathway = "lpl00010",  gene.idtype = "KEGG", out.suffix = "wcfs1")
+pathview(gene.data = logFC, species = "lpl", pathway = "lpl00030", gene.idtype = "KEGG", out.suffix = "wcfs1")
 ```
-De genen bij WCFS1:
+Glycolyse WCFS1:
 
 ![Glycolysis marked with WCFS1 genes](lpl00010.wcfs1.png)
+
+Pentose fosfaat pathway:
+
+![Pentose phosphate pathway marked with WCFS1 genes](lpl00030.wcfs1.png)
+
+
 ```{r keggmapper NC8, message=FALSE}
 
 selected_nc8 = nc8[c("lp_3658", "lp_0371"), ]
 genes <- row.names(combined_nc8)
 logFC <- combined_nc8$logFC
 names(logFC) <- genes
-pathview(gene.data = logFC, species = "lpl", pathway = mypathway,  gene.idtype = "KEGG", out.suffix = "nc8")
-
+pathview(gene.data = logFC, species = "lpl", pathway = "lpl00010",  gene.idtype = "KEGG", out.suffix = "nc8")
+pathview(gene.data = logFC, species = "lpl", pathway = "lpl00030",  gene.idtype = "KEGG", out.suffix = "nc8")
 ```
-De genen bij NC8:
+Glycolyse NC8:
 
 ![Glycolysis marked with NC8 genes](lpl00010.nc8.png)
+
+Pentose fosfaat pathway:
+
+![Pentose phosphate pathway with NC8 genes](lpl00030.nc8.png)
+
+
 <br>
 
