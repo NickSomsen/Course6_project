@@ -224,6 +224,8 @@ combined_nc8 = cbind(nc8, anno_frame[rownames(nc8), ])
 
 Zodat de data makkelijker te lezen is, worden de twee data frames weggeschreven naar een bestand, die vervolgens bijvoorbeeld in excel ingeladen kan worden.
 ```{r write results}
+library(xlsx)
+library(openxlsx)
 results <- write.xlsx(combined_wcfs1, paste(here(), "results.xlsx", sep = "/"), sheetName = "wcfs1_results", row.names = TRUE)
 
 addWorksheet(results, sheetName = "nc8_results")
