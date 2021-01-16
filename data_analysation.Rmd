@@ -1,7 +1,7 @@
 ---
 title: "Analysis of RNA-seq gene expression data"
 author: "Gabe van den Hoeven, Tom Ummenthun and Nick Somsen"
-date: "datum-komt-hier"
+date: "16-01-2021"
 output:
   html_document:
     toc: true #table of contents
@@ -21,7 +21,7 @@ lapply(libraries, require, character.only = TRUE)
 <br> <!-- voor een extra witregel -->
 
 ## Loading the dataset
-Als eerst moet het bestand in R worden ingelezen. Dit is gedaan met behulp van de library `here`, die de current working directory met `here()` ophaald, en vervolgens wordt dit samengeplakt met een opgegeven bestandsnaam. Van de data in het bestand is vervolgens een data frame gemaakt met `read.table()`. De identifiers voor de rijen (`row.names`) zijn de gennamen, die in kolom 1 van het bestand staan.
+Als eerst moet het bestand in R worden ingelezen. Dit is gedaan met behulp van de library `here`, die de current working directory met `here()` ophaald, en vervolgens wordt dit samengeplakt met een opgegeven bestandsnaam. Van de data in het bestand is vervolgens een data frame gemaakt met `read.table()`. De identifiers voor de rijen (`row.names`) zijn de gennamen, die in rij 1 van het bestand staan.
 ``` {r create data frame, message = FALSE, warning = FALSE}
 
 file_name = paste(here(), "RNA-Seq-counts.txt", sep = "/")
@@ -34,7 +34,7 @@ options(width = 100) # zodat alle kolommen op dezelfe line kunnen
 head(data_frame, 10)
 ```
 
-Om makkelijk met de count data te kunnen werken, wordt er van de data frame een DGEList object gemaakt. `DGEList()` is een functie van `edgeR` library. Voor een DGEList moet de counts data (vanuit de dataset) en de groups (de verschillende samples) worden opgegeven:
+Om makkelijk met de count data te kunnen werken, wordt er van de data frame een DGEList object gemaakt. `DGEList()` is een functie van de `edgeR` library. Voor een DGEList moet de counts data (vanuit de dataset) en de groups (de verschillende samples) worden opgegeven:
 ```{r factor for DGEList}
 exp = c("WCFS1.glc","WCFS1.glc","WCFS1.rib","WCFS1.rib", "NC8.glc", "NC8.glc", "NC8.rib", "NC8.rib")
 group = factor(exp)
@@ -66,7 +66,7 @@ In R kan de trimmed mean normalisatie methode worden uitgevoerd met `calcNormFac
 y <- calcNormFactors(y, method="TMM")
 y
 ```
-Alleen tijdens de berekening van de normalisatiefactoren worden de kleinste en hoogste waarde tijdelijk niet meegenomen, maar deze waarden blijven wel gewoon in het DGEList data object zitten. Wanneer er vervolgens verdere berekeningne worden gedaan met de dataset, zitten de kleinste en hoogste waarden hier dus gewoon weer bij. De vermeningvuldiging van counts met normalisatiefactor vindt automatisch plaats wanneer er met het data object gerekend wordt. 
+Alleen tijdens de berekening van de normalisatiefactoren worden de kleinste en hoogste waarde tijdelijk niet meegenomen, maar deze waarden blijven wel gewoon in het DGEList data object zitten. Wanneer er vervolgens verdere berekeningen worden gedaan met de dataset, zitten de kleinste en hoogste waarden hier dus gewoon weer bij. De vermeningvuldiging van counts met normalisatiefactor vindt automatisch plaats wanneer er met het data object gerekend wordt. 
 
 Vervolgens wordt er een design matrix gemaakt, die data aan elkaar linkt. Een design matrix is "a matrix of values of explanatory variables of a set of objects. Each row represents an individual object, with the successive columns corresponding to the variables and their specific values for that object" (via https://en.wikipedia.org/wiki/Design_matrix). In R kan er een design matrix worden gemaakt met de `model.matrix()` functie. Het object waarover de design matrix moet worden gemaakt wordt opgegeven als de eerste parameter. De data vanuit de data frame die gelinkt moet worden aan het object wordt met de `data` parameter opgegeven. De kolommen van de design matrix krijgen een naam met de `colnames()` functie.
 ```{r design matrix}
@@ -91,7 +91,7 @@ summary(keep) # 302 genen van de 2219 worden eruit gefilterd (~13%)
 Om de spreiding tussen de data te bepalen, moet de dispersie worden berekent. Hiervoor zijn er verschillende functies beschikbaar in de `edgeR` library. Om zoveel mogelijk informatie te verkrijgen, worden er meerdere grafieken in dezelfde figuur geplot. Dit zijn de volgende grafieken:
 
 1. De tagwise dispersie grafiek, waarbij elk datapunt één gen voor stelt.
-2. De common dispersie grafiek, die een gemiddelde weer geeft van alle data, en daardoor constant is
+2. De common dispersie grafiek, die een gemiddelde weer geeft van alle data, en daardoor constant is.
 3. De trend dispersie grafiek, die een trendlijn trekt door de tagwise datapunten.
 
 Er zijn 2 methodes om deze grafieken te maken. De methode gebruikt in dit onderzoek is de `estimateDisp()` functie, die alle grafieken in één keer plot. Hiervoor heeft de functie het DGEList object en de design matrix nodig:
@@ -109,7 +109,7 @@ title("BCV plot of the DGEList")
 
 In de figuur is bijvoorbeeld te zien dat de variatie afneemt, naarmate de counts toenemen.
 
-Ook kan nu de correlatie worden bepaald tussen de duplo's onderling, en over de verschillende condities en de _L. plantarum_ stammen. Dit kan in worden geplot in een PCA plot:
+Ook kan nu de correlatie worden bepaald tussen de duplo's onderling, en over de verschillende condities en de _L. plantarum_ stammen. Dit kan in een PCA plot worden geplot:
 ```{r correlation plot}
 plotMDS(y)
 ```
@@ -161,7 +161,7 @@ plot(fit$table$logFC, main = "Fold Changes per gene visualized for the NC8 strai
 # text(0:nrow(fit$table), fit$table$logFC, labels = row.names(fit$table)) # ook weer om de gennamen erbij te plotten
 ```
 
-Desondanks dat er in de PAC plot te zien was dat de de WCFS1 en NC8 stammen best wat uitelkaar lagen, lijkt er toch weinig verschil te zitten tussen de twee stammen in de genen die van expressie niveau veranderen.
+Desondanks dat er in de PCA plot te zien was dat de de WCFS1 en NC8 stammen best wat uitelkaar lagen, lijkt er toch weinig verschil te zitten tussen de twee stammen in de genen die van expressie niveau veranderen.
 
 <br>
 
@@ -177,7 +177,7 @@ Een andere clusteringsmethode is `kmeans()`. Deze methode is getest, maar is nie
 <br>
 
 ## Results
-Nu alle berekeningen gedaan zijn kunnen er genen geselecteerd worden die aan bepaalde thresholds voldoen om verder onderzoek naar te doen, en ze in metabole pathways te plaatsen. De thresholds zijn een logFC value van hoger dan 1, of lager dan -1, en een FDR die kleiner is dan 0.05. Omdat de FDR waarden niet weergegeven worden in de fit variabelen van de twee stammen, maar wel met de `topTags()` functie, werden er bij de "Calculate fold changes" stap twee nieuwe objecten aangemaakt, waarin alle genen met behulp van de `topTags()` functie werden opgeslagen, zodat de FDR waarden bij dat object in zat. Vervolgens kan er op logFC en FDR gefiltert worden, wat met behulp van de functie `filter()` van de library `dpylr` was gedaan.
+Nu alle berekeningen gedaan zijn, kunnen er genen geselecteerd worden die aan bepaalde thresholds voldoen om verder onderzoek naar te doen, en ze in metabole pathways te plaatsen. De thresholds zijn een logFC value van hoger dan 1, of lager dan -1, en een FDR die kleiner is dan 0.05. Omdat de FDR waarden niet weergegeven worden in de fit variabelen van de twee stammen, maar wel met de `topTags()` functie, werden er bij de "Calculate fold changes" stap twee nieuwe objecten aangemaakt, waarin alle genen met behulp van de `topTags()` functie werden opgeslagen, zodat de FDR waarden bij dat object in zat. Vervolgens kan er op logFC en FDR gefiltert worden, wat met behulp van de functie `filter()` van de library `dpylr` was gedaan.
 ```{r results, warning=FALSE, message=FALSE}
 # filter WCFS1 op logFC en False Discovery Rate (FDR)
 wcfs1 = dplyr::filter(wcfs1$table, (wcfs1$table$logFC > 1 | wcfs1$table$logFC < -1) & wcfs1$table$FDR < 0.05)
@@ -192,7 +192,7 @@ nrow(nc8)
 De filtering is voor beide stammen apart gedaan. Dit resulteerde in 296 signifcante genen in de WCFS1 stam en 
 365 significante genen in de NC8 stam.
 
-Om de genen verder te onderzoeken, moeten de genen van annotatie worden voorzien. Deze annotatie van (bijna) elk gen was te vinden in het WCFS1_anno.tsv bestand, en is ingelezen met de `read.delim()` functie of er een data frame van te maken. Omdat er tijdens het inlezen van het annotatie bestand door een onbekende reden er teveel kolommen werden aangemaakt, werd de ontstane data frame nog een keer gesubset, zodat deze kolommen uit de data frame werden gehaald. Vervolgens zijn de data frames van beide stammen apart met het annotatie data frame samengevoegd met de `cbind()` functie, om de genen van annotatie te voorzien.
+Om de genen verder te onderzoeken, moeten de genen van annotatie worden voorzien. Deze annotatie van (bijna) elk gen was te vinden in het WCFS1_anno.tsv bestand, en is ingelezen met de `read.delim()` functie om er een data frame van te maken. Omdat er tijdens het inlezen van het annotatie bestand door een onbekende reden er teveel kolommen werden aangemaakt, werd de ontstane data frame nog een keer gesubset, zodat deze kolommen uit de data frame werden gehaald. Vervolgens zijn de data frames van beide stammen apart met het annotatie data frame samengevoegd met de `cbind()` functie, om de genen van annotatie te voorzien.
 ```{r merge with annotation}
 # create annotation data frame
 anno_frame = read.delim(paste(here(), "WCFS1_anno.tsv", sep = "/"), header=TRUE, row.names = 1)
@@ -204,7 +204,7 @@ combined_wcfs1 = cbind(wcfs1, anno_frame[rownames(wcfs1), ])
 combined_nc8 = cbind(nc8, anno_frame[rownames(nc8), ])
 ```
 
-Zodat de data makkelijker te lezen is, worden de twee data frames weggeschreven naar een .xlsx bestand. Dit wordt gedaan met de `write.xlsxx()` functie van de `xlsx` library.
+Zodat de data makkelijker te lezen is, worden de twee data frames weggeschreven naar een .xlsx bestand. Dit wordt gedaan met de `write.xlsx()` functie van de `xlsx` library.
 ```{r write results}
 # ler er op dat dit een error geeft als het bestand al bestaat, dus daarom staan ze nu uit gecommend
 # write.xlsx(combined_wcfs1, paste(here(), "results.xlsx", sep = "/"), sheetName = "wcfs1_results", append = TRUE)
